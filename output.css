@@ -672,6 +672,10 @@ video {
   padding-bottom: 0.75rem;
 }
 
+.text-left{
+  text-align: left;
+}
+
 .text-center{
   text-align: center;
 }
@@ -784,6 +788,12 @@ video {
 
 .group:hover .group-hover\:fill-black{
   fill: #000;
+}
+
+@media (min-width: 640px){
+  .sm\:ml-20{
+    margin-left: 5rem;
+  }
 }
 
 @media (min-width: 768px){
