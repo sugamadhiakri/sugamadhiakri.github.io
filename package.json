@@ -3,7 +3,7 @@
     "build": "npx tailwindcss -i ./src/input.css -o ./dist/output.css",
     "dev": "npx tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
     "preDeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d dist"
   },
   "homepage": "https://sugamadhiakri.github.io",
   "devDependencies": {
