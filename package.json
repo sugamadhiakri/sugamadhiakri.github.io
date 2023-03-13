@@ -6,7 +6,6 @@
   },
   "homepage": "https://sugamadhiakri.github.io",
   "devDependencies": {
-    "copyfiles": "^2.4.1",
     "gh-pages": "^5.0.0",
     "tailwindcss": "^3.2.7"
   }
