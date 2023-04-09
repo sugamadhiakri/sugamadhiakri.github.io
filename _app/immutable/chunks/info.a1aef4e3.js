@@ -1,0 +1,1 @@
+const a="Sugam Adhikari",s="Just a regular software engineer obsessed with Real Madrid",i="sugam.adhiakri123@gmail.com",e="+977 9843-(sike)",n="https://github.com/sugamadhiakri",t="https://linkedin.com/in/sugamadhiakri";export{s as b,i as e,n as g,t as l,a as n,e as p};
