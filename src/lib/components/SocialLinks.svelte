@@ -3,13 +3,13 @@
 </script>
 
 <div
-	class="flex flex-col items-center p-6 mt-20 space-y-5 md:mt-44 md:flex-row md:flex-start md:space-y-0 md:space-x-5"
+	class="flex flex-row items-center space-x-5"
 >
 	{#if linkedin}
 		<a
 			href={linkedin}
 			target="_blank"
-			class="flex justify-center w-1/2 px-5 py-3 space-x-2 text-sm font-thin transition duration-500 border border-white flex-end md:w-36 hover:bg-white hover:text-black group"
+			class="flex justify-center items-center px-4 py-2 space-x-2 text-xs font-thin transition duration-500 border border-zinc-800 rounded-lg md:w-32 hover:bg-white hover:text-black hover:border-white group"
 		>
 			<svg
 				class="transition duration-500 fill-white group-hover:fill-black"
@@ -30,7 +30,7 @@
 		<a
 			href={github}
 			target="_blank"
-			class="flex justify-center w-1/2 px-5 py-3 space-x-2 text-sm font-thin transition duration-500 border border-white flex-end md:w-36 hover:bg-white hover:text-black group"
+			class="flex justify-center items-center px-4 py-2 space-x-2 text-xs font-thin transition duration-500 border border-zinc-800 rounded-lg md:w-32 hover:bg-white hover:text-black hover:border-white group"
 		>
 			<svg
 				class="transition duration-500 fill-white group-hover:fill-black"
