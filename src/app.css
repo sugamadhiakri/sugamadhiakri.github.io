@@ -1,11 +1,53 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800&family=Montserrat:wght@100;200;300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+html { scroll-behavior: smooth; }
+
+@keyframes hero-in {
+	from { opacity: 0; transform: translateY(16px); }
+	to { opacity: 1; transform: none; }
+}
+.hero-reveal { animation: hero-in 300ms var(--drawably-ease) both; }
+
+@media (prefers-reduced-motion: reduce) {
+	html { scroll-behavior: auto; }
+	.hero-reveal { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.transition-transform {
+		transition: none;
+	}
+}
+:root {
+	--drawably-stroke: #4a48a8;
+	--drawably-fill: #4a48a8;
+	--drawably-paper: #f4f4f2;
+	--drawably-success: #188a42;
+	--drawably-error: #d12724;
+	--drawably-ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+
 @layer base {
-    body {
-        @apply antialiased;
-    }
+	body {
+		background: var(--drawably-paper);
+		color: #18181b;
+		@apply antialiased;
+	}
+}
+
+/* subtle paper grain over everything: sells the hand-drawn-on-paper fantasy.
+   fixed + pointer-events-none so it never repaints on scroll or blocks input. */
+body::after {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: 40;
+	pointer-events: none;
+	opacity: 0.05;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }

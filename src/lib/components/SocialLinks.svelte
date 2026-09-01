@@ -1,5 +1,9 @@
 <script>
 	import { github, linkedin } from './../info'
+	import { sketch } from '$lib/drawable'
+	import { drawablyButton } from 'drawably'
+
+	const outlineButton = sketch(drawablyButton, { variant: 'outline' })
 </script>
 
 <div
@@ -9,10 +13,11 @@
 		<a
 			href={linkedin}
 			target="_blank"
-			class="flex justify-center items-center px-4 py-2 space-x-2 text-xs font-thin transition duration-500 border border-zinc-800 rounded-lg md:w-32 hover:bg-white hover:text-black hover:border-white group"
+			use:outlineButton
+			class="flex justify-center items-center px-4 py-2 space-x-2 text-xs font-thin text-zinc-600 md:w-32"
 		>
 			<svg
-				class="transition duration-500 fill-white group-hover:fill-black"
+				class="fill-ink"
 				width="16"
 				height="16"
 				viewBox="0 0 20 18"
@@ -30,10 +35,11 @@
 		<a
 			href={github}
 			target="_blank"
-			class="flex justify-center items-center px-4 py-2 space-x-2 text-xs font-thin transition duration-500 border border-zinc-800 rounded-lg md:w-32 hover:bg-white hover:text-black hover:border-white group"
+			use:outlineButton
+			class="flex justify-center items-center px-4 py-2 space-x-2 text-xs font-thin text-zinc-600 md:w-32"
 		>
 			<svg
-				class="transition duration-500 fill-white group-hover:fill-black"
+				class="fill-ink"
 				width="16"
 				height="16"
 				viewBox="0 0 20 18"
