@@ -1,4 +1,372 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800&family=Montserrat:wght@100;200;300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap");.drawably-host {
+  --drawably-ease: cubic-bezier(0.2, 0, 0, 1);
+  position: relative;
+  isolation: isolate;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.drawably-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.drawably-svg path {
+  fill: none;
+  stroke: var(--drawably-ink, var(--drawably-stroke, #2724d1));
+  stroke-width: var(--drawably-width, 2);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* one animation on the svg steps a frame counter; every path derives its
+   opacity from the inherited value in the same style pass, so frames can never
+   sample out of step with each other (three per-path animations flashed blank
+   on tab refocus when their clocks re-aligned separately) */
+@property --drawably-frame {
+  syntax: "<integer>";
+  inherits: true;
+  initial-value: 0;
+}
+
+.drawably-svg {
+  --drawably-frame: 0;
+  animation: drawably-boil 1200ms step-end infinite;
+}
+
+@keyframes drawably-boil {
+  0% { --drawably-frame: 0; }
+  33.33% { --drawably-frame: 1; }
+  66.67% { --drawably-frame: 2; }
+}
+
+/* 1 when the counter equals this frame's index, 0 for the other two */
+.drawably-boil {
+  --drawably-i: 0;
+  opacity: clamp(0, 1 - (var(--drawably-frame) - var(--drawably-i)) * (var(--drawably-frame) - var(--drawably-i)), 1);
+}
+
+.drawably-boil[data-i="1"] {
+  --drawably-i: 1;
+}
+
+.drawably-boil[data-i="2"] {
+  --drawably-i: 2;
+}
+
+.drawably-svg .drawably-blob {
+  fill: var(--drawably-ink, var(--drawably-fill, #2724d1));
+  stroke: var(--drawably-ink, var(--drawably-fill, #2724d1));
+  stroke-width: 4;
+}
+
+.drawably-svg .drawably-scribble {
+  stroke-width: 1.5;
+}
+
+.drawably-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--drawably-ink, var(--drawably-stroke, #2724d1));
+  cursor: pointer;
+  outline: none;
+  transition: transform 120ms ease;
+}
+
+/* press: the pen pushes into the paper — the sketch sinks and the outline
+   thickens; hover lifts it and tints the inside with the stroke at 10%, the
+   same wash the picker uses for its hovered option */
+.drawably-button:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.drawably-button .drawably-outline {
+  transition: stroke-width 120ms ease, fill 120ms ease;
+}
+
+.drawably-button:active .drawably-outline {
+  stroke-width: calc(var(--drawably-width, 2) * 1.4);
+}
+
+@media (hover: hover) {
+  .drawably-button:hover:not(:disabled, [data-state="loading"]) {
+    transform: translateY(-1px);
+  }
+
+  .drawably-button:not(.drawably-button--solid):hover:not(:disabled) .drawably-outline {
+    fill: color-mix(in srgb, var(--drawably-ink, var(--drawably-stroke, #2724d1)) 10%, transparent);
+  }
+
+  .drawably-button:hover:active {
+    transform: translateY(1px) scale(0.98);
+  }
+}
+
+.drawably-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+}
+
+.drawably-button--neutral {
+  --drawably-stroke: #6e675f;
+  --drawably-fill: #6e675f;
+}
+
+.drawably-button--danger {
+  --drawably-stroke: var(--drawably-error, #d12724);
+  --drawably-fill: var(--drawably-error, #d12724);
+}
+
+.drawably-button[data-state="error"] {
+  --drawably-ink: var(--drawably-error, #d12724);
+}
+
+.drawably-button[data-state="success"] {
+  --drawably-ink: var(--drawably-success, #188a42);
+}
+
+.drawably-button[data-state="loading"] {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.drawably-button[data-state="loading"] .drawably-svg {
+  animation-duration: 450ms;
+}
+
+.drawably-button--solid {
+  color: var(--drawably-paper, #fff);
+}
+
+.drawably-svg .drawably-focus {
+  visibility: hidden;
+  stroke-width: 1.5;
+}
+
+.drawably-host:is(:focus-visible, :has(:focus-visible)) .drawably-focus {
+  visibility: visible;
+}
+
+.drawably-checkbox,
+.drawably-radio {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+}
+
+.drawably-toggle {
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+:is(.drawably-checkbox, .drawably-radio, .drawably-toggle) input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.drawably-svg .drawably-dot {
+  fill: var(--drawably-ink, var(--drawably-fill, #2724d1));
+  stroke: var(--drawably-ink, var(--drawably-fill, #2724d1));
+  visibility: hidden;
+  transform: scale(0.5);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 160ms var(--drawably-ease);
+}
+
+.drawably-radio[data-checked] .drawably-dot {
+  visibility: visible;
+  transform: scale(1);
+}
+
+.drawably-svg .drawably-knob {
+  transition: transform 160ms var(--drawably-ease);
+}
+
+/* travel = toggle width 44px minus height 24px; resizing the toggle in CSS
+   means overriding this too */
+.drawably-toggle[data-checked] .drawably-knob {
+  transform: translateX(20px);
+}
+
+.drawably-divider {
+  display: block;
+  height: 10px;
+  border: 0;
+}
+
+.drawably-svg .drawably-check {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 240ms var(--drawably-ease);
+}
+
+.drawably-checkbox[data-checked] .drawably-check {
+  stroke-dashoffset: 0;
+}
+
+.drawably-inputbox,
+.drawably-textarea,
+.drawably-select {
+  display: inline-block;
+}
+
+:is(.drawably-inputbox, .drawably-textarea, .drawably-select) :is(input, textarea, select) {
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  padding: 8px 12px;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.drawably-textarea textarea {
+  display: block;
+  resize: vertical;
+}
+
+/* right padding reserves the gutter the sketched chevron sits in */
+.drawably-select select {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  padding-right: 34px;
+  cursor: pointer;
+}
+
+/* Chromium's customisable select lets the options list be styled and renders
+   the select's children inside it, which is where the .drawably-picker frame
+   lives; elsewhere the OS draws the popup and this block is ignored */
+@supports ((-webkit-appearance: base-select) or (-moz-appearance: base-select) or (appearance: base-select)) {
+  .drawably-select select,
+  .drawably-select select::picker(select) {
+    -webkit-appearance: base-select;
+       -moz-appearance: base-select;
+            appearance: base-select;
+  }
+
+  .drawably-select select::picker-icon {
+    display: none;
+  }
+
+  /* the picker is a fixed-position popover, so the absolute frame fills it.
+     ponytail: it scrolls with a long option list; clip the frame if that shows */
+  .drawably-select select::picker(select) {
+    margin-top: 4px;
+    padding: 6px;
+    border: 0;
+    background: var(--drawably-paper, #fff);
+    color: inherit;
+    font: inherit;
+  }
+
+  .drawably-select option {
+    padding: 4px 8px;
+    border-radius: 3px;
+  }
+
+  .drawably-select option:is(:hover, :focus-visible) {
+    background: color-mix(in srgb, var(--drawably-stroke, #2724d1) 10%, transparent);
+  }
+
+  /* every option gets the same empty box so text lines up whether or not it
+     is chosen; the chosen one paints the attacher's sketched check through it.
+     Chromium lays the option out as flex with a 0.5em gap, so no margin here */
+  .drawably-select option::checkmark {
+    content: "";
+    display: inline-block;
+    width: 0.875em;
+    height: 0.875em;
+  }
+
+  .drawably-select option:checked::checkmark {
+    background: var(--drawably-ink, var(--drawably-stroke, #2724d1));
+    -webkit-mask: var(--drawably-check) center / contain no-repeat;
+            mask: var(--drawably-check) center / contain no-repeat;
+  }
+}
+
+.drawably-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  font:
+    500 12px/1.4 Geist Mono,
+    ui-monospace,
+    monospace;
+  color: var(--drawably-ink, var(--drawably-stroke, #2724d1));
+}
+
+/* padding is the gutter the marker is drawn into (see MARKER_LEFT) */
+.drawably-list {
+  list-style: none;
+  padding-left: 24px;
+}
+
+.drawably-card {
+  padding: 16px;
+}
+
+/* marker wash: stroke as wide as the scribble gap so the hatching reads as
+   one swipe, multiplied so the text stays legible over it. stroke-opacity,
+   not opacity — the boil keyframes animate opacity and would override it */
+.drawably-svg .drawably-wash {
+  stroke: var(--drawably-ink, var(--drawably-fill, #2724d1));
+  stroke-width: 6;
+  stroke-opacity: 0.3;
+  mix-blend-mode: multiply;
+}
+
+/* text decorations sit on body copy, where the 2px control stroke reads heavy */
+:is(.drawably-underline, .drawably-circle) .drawably-svg path {
+  stroke-width: var(--drawably-width, 1.5);
+}
+
+/* body-level overlay positioned in document coordinates by the attacher;
+   sits above content since it annotates it */
+.drawably-arrow {
+  inset: auto;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawably-svg {
+    animation: none;
+  }
+  .drawably-svg .drawably-check,
+  .drawably-svg .drawably-dot,
+  .drawably-svg .drawably-knob {
+    transition: none;
+  }
+}
+/* Drawably Pen: the library's own strokes as a font. Opt in — import this
+   file and set font-family: "Drawably Pen" where you want it. style.css never
+   loads it, so nothing changes for anyone who doesn't ask. */
+@font-face {
+  font-family: "Drawably Pen";
+  src: url("/_app/immutable/assets/DrawablyPen.2a3dad50.ttf") format("truetype");
+  font-weight: 400;
+  font-display: block;
+}
+
 
 /*
 ! tailwindcss v3.3.1 | MIT License | https://tailwindcss.com
@@ -383,10 +751,12 @@ video {
   display: none;
 }
 
-body{
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+body {
+		background: var(--drawably-paper);
+		color: #18181b;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
 
 *, ::before, ::after{
   --tw-border-spacing-x: 0;
@@ -482,44 +852,21 @@ body{
   --tw-backdrop-sepia:  ;
 }
 
-.absolute{
-  position: absolute;
-}
-
 .relative{
   position: relative;
 }
 
-.-right-4{
-  right: -1rem;
-}
-
-.-top-4{
-  top: -1rem;
-}
-
-.bottom-\[-10\%\]{
-  bottom: -10%;
-}
-
-.left-\[-10\%\]{
-  left: -10%;
-}
-
-.right-\[-10\%\]{
-  right: -10%;
-}
-
-.top-\[-10\%\]{
-  top: -10%;
-}
-
-.z-10{
-  z-index: 10;
+.mx-auto{
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .mb-10{
   margin-bottom: 2.5rem;
+}
+
+.mb-12{
+  margin-bottom: 3rem;
 }
 
 .mb-2{
@@ -530,16 +877,20 @@ body{
   margin-bottom: 1rem;
 }
 
+.mb-5{
+  margin-bottom: 1.25rem;
+}
+
 .mb-6{
   margin-bottom: 1.5rem;
 }
 
-.mb-8{
-  margin-bottom: 2rem;
-}
-
 .ml-1{
   margin-left: 0.25rem;
+}
+
+.mt-1{
+  margin-top: 0.25rem;
 }
 
 .mt-10{
@@ -552,14 +903,6 @@ body{
 
 .mt-20{
   margin-top: 5rem;
-}
-
-.mt-4{
-  margin-top: 1rem;
-}
-
-.mt-40{
-  margin-top: 10rem;
 }
 
 .mt-6{
@@ -594,41 +937,17 @@ body{
   display: none;
 }
 
-.h-24{
-  height: 6rem;
-}
-
-.h-32{
-  height: 8rem;
-}
-
-.h-\[40\%\]{
-  height: 40%;
-}
-
 .h-fit{
   height: -moz-fit-content;
   height: fit-content;
 }
 
-.min-h-screen{
-  min-height: 100vh;
-}
-
-.w-24{
-  width: 6rem;
+.min-h-\[100dvh\]{
+  min-height: 100dvh;
 }
 
 .w-3\/4{
   width: 75%;
-}
-
-.w-32{
-  width: 8rem;
-}
-
-.w-\[40\%\]{
-  width: 40%;
 }
 
 .w-full{
@@ -643,8 +962,16 @@ body{
   max-width: 48rem;
 }
 
+.max-w-6xl{
+  max-width: 72rem;
+}
+
 .max-w-\[1080px\]{
   max-width: 1080px;
+}
+
+.flex-1{
+  flex: 1 1 0%;
 }
 
 .cursor-default{
@@ -679,6 +1006,10 @@ body{
   align-items: center;
 }
 
+.items-baseline{
+  align-items: baseline;
+}
+
 .justify-center{
   justify-content: center;
 }
@@ -705,22 +1036,16 @@ body{
   margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
+.space-x-4 > :not([hidden]) ~ :not([hidden]){
+  --tw-space-x-reverse: 0;
+  margin-right: calc(1rem * var(--tw-space-x-reverse));
+  margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
 .space-x-5 > :not([hidden]) ~ :not([hidden]){
   --tw-space-x-reverse: 0;
   margin-right: calc(1.25rem * var(--tw-space-x-reverse));
   margin-left: calc(1.25rem * calc(1 - var(--tw-space-x-reverse)));
-}
-
-.space-x-8 > :not([hidden]) ~ :not([hidden]){
-  --tw-space-x-reverse: 0;
-  margin-right: calc(2rem * var(--tw-space-x-reverse));
-  margin-left: calc(2rem * calc(1 - var(--tw-space-x-reverse)));
-}
-
-.space-y-12 > :not([hidden]) ~ :not([hidden]){
-  --tw-space-y-reverse: 0;
-  margin-top: calc(3rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(3rem * var(--tw-space-y-reverse));
 }
 
 .space-y-2 > :not([hidden]) ~ :not([hidden]){
@@ -749,118 +1074,12 @@ body{
   white-space: nowrap;
 }
 
-.rounded{
-  border-radius: 0.25rem;
-}
-
-.rounded-2xl{
-  border-radius: 1rem;
-}
-
-.rounded-full{
-  border-radius: 9999px;
-}
-
-.rounded-lg{
-  border-radius: 0.5rem;
-}
-
-.rounded-xl{
-  border-radius: 0.75rem;
-}
-
-.border{
-  border-width: 1px;
-}
-
-.border-b{
-  border-bottom-width: 1px;
-}
-
-.border-l{
-  border-left-width: 1px;
-}
-
-.border-l-2{
-  border-left-width: 2px;
-}
-
-.border-t{
-  border-top-width: 1px;
-}
-
-.border-gray-400{
-  --tw-border-opacity: 1;
-  border-color: rgb(156 163 175 / var(--tw-border-opacity));
-}
-
-.border-zinc-800{
-  --tw-border-opacity: 1;
-  border-color: rgb(39 39 42 / var(--tw-border-opacity));
-}
-
-.border-zinc-800\/80{
-  border-color: rgb(39 39 42 / 0.8);
-}
-
-.border-zinc-900{
-  --tw-border-opacity: 1;
-  border-color: rgb(24 24 27 / var(--tw-border-opacity));
-}
-
-.bg-black{
-  --tw-bg-opacity: 1;
-  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
-}
-
-.bg-blue-500\/10{
-  background-color: rgb(59 130 246 / 0.1);
-}
-
-.bg-emerald-500\/10{
-  background-color: rgb(16 185 129 / 0.1);
-}
-
-.bg-emerald-500\/5{
-  background-color: rgb(16 185 129 / 0.05);
-}
-
-.bg-purple-500\/5{
-  background-color: rgb(168 85 247 / 0.05);
-}
-
-.bg-white{
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.bg-zinc-800\/50{
-  background-color: rgb(39 39 42 / 0.5);
-}
-
-.bg-zinc-900\/50{
-  background-color: rgb(24 24 27 / 0.5);
-}
-
-.bg-zinc-950\/20{
-  background-color: rgb(9 9 11 / 0.2);
-}
-
-.fill-white{
-  fill: #fff;
-}
-
-.p-6{
-  padding: 1.5rem;
+.fill-ink{
+  fill: #4a48a8;
 }
 
 .p-8{
   padding: 2rem;
-}
-
-.px-2{
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
 }
 
 .px-3{
@@ -888,6 +1107,11 @@ body{
   padding-bottom: 0.25rem;
 }
 
+.py-1\.5{
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+
 .py-2{
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
@@ -896,6 +1120,11 @@ body{
 .py-20{
   padding-top: 5rem;
   padding-bottom: 5rem;
+}
+
+.py-28{
+  padding-top: 7rem;
+  padding-bottom: 7rem;
 }
 
 .py-3{
@@ -907,20 +1136,24 @@ body{
   padding-bottom: 10rem;
 }
 
-.pt-10{
-  padding-top: 2.5rem;
+.pt-28{
+  padding-top: 7rem;
+}
+
+.text-left{
+  text-align: left;
 }
 
 .text-center{
   text-align: center;
 }
 
-.font-sans{
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif;
+.font-pen{
+  font-family: "Drawably Pen", Inter, ui-sans-serif, sans-serif;
 }
 
 .font-serif{
-  font-family: Montserrat, ui-serif, Georgia, Cambria, Times New Roman, Times, serif;
+  font-family: Newsreader, Georgia, Cambria, Times New Roman, serif;
 }
 
 .text-2xl{
@@ -933,8 +1166,8 @@ body{
   line-height: 2.25rem;
 }
 
-.text-7xl{
-  font-size: 4.5rem;
+.text-6xl{
+  font-size: 3.75rem;
   line-height: 1;
 }
 
@@ -964,6 +1197,10 @@ body{
 
 .font-light{
   font-weight: 300;
+}
+
+.font-medium{
+  font-weight: 500;
 }
 
 .font-normal{
@@ -1006,124 +1243,36 @@ body{
   letter-spacing: 0.1em;
 }
 
-.text-black{
+.text-ink{
   --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity));
+  color: rgb(74 72 168 / var(--tw-text-opacity));
 }
 
-.text-blue-400{
+.text-zinc-600{
   --tw-text-opacity: 1;
-  color: rgb(96 165 250 / var(--tw-text-opacity));
+  color: rgb(82 82 91 / var(--tw-text-opacity));
 }
 
-.text-blue-400\/80{
-  color: rgb(96 165 250 / 0.8);
-}
-
-.text-blue-500{
+.text-zinc-700{
   --tw-text-opacity: 1;
-  color: rgb(59 130 246 / var(--tw-text-opacity));
+  color: rgb(63 63 70 / var(--tw-text-opacity));
 }
 
-.text-emerald-400{
+.text-zinc-900{
   --tw-text-opacity: 1;
-  color: rgb(52 211 153 / var(--tw-text-opacity));
-}
-
-.text-emerald-400\/80{
-  color: rgb(52 211 153 / 0.8);
-}
-
-.text-gray-400{
-  --tw-text-opacity: 1;
-  color: rgb(156 163 175 / var(--tw-text-opacity));
-}
-
-.text-gray-500{
-  --tw-text-opacity: 1;
-  color: rgb(107 114 128 / var(--tw-text-opacity));
-}
-
-.text-purple-400\/80{
-  color: rgb(192 132 252 / 0.8);
-}
-
-.text-white{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.text-zinc-300{
-  --tw-text-opacity: 1;
-  color: rgb(212 212 216 / var(--tw-text-opacity));
-}
-
-.text-zinc-400{
-  --tw-text-opacity: 1;
-  color: rgb(161 161 170 / var(--tw-text-opacity));
+  color: rgb(24 24 27 / var(--tw-text-opacity));
 }
 
 .underline{
   text-decoration-line: underline;
 }
 
-.decoration-blue-500\/50{
-  text-decoration-color: rgb(59 130 246 / 0.5);
+.opacity-100{
+  opacity: 1;
 }
 
-.decoration-emerald-500\/50{
-  text-decoration-color: rgb(16 185 129 / 0.5);
-}
-
-.opacity-0{
-  opacity: 0;
-}
-
-.shadow-sm{
-  --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
-.blur-2xl{
-  --tw-blur: blur(40px);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-
-.blur-3xl{
-  --tw-blur: blur(64px);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-
-.blur-\[120px\]{
-  --tw-blur: blur(120px);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-
-.transition{
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-.transition-all{
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-.transition-colors{
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-.transition-opacity{
-  transition-property: opacity;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+.outline{
+  outline-style: solid;
 }
 
 .transition-transform{
@@ -1132,139 +1281,84 @@ body{
   transition-duration: 150ms;
 }
 
-.duration-300{
-  transition-duration: 300ms;
+html { scroll-behavior: smooth; }
+
+@keyframes hero-in {
+	from { opacity: 0; transform: translateY(16px); }
+	to { opacity: 1; transform: none; }
 }
 
-.duration-500{
-  transition-duration: 500ms;
+.hero-reveal { animation: hero-in 300ms var(--drawably-ease) both; }
+
+@media (prefers-reduced-motion: reduce) {
+	html { scroll-behavior: auto; }
+	.hero-reveal { animation: none; }
+	.transition-transform {
+		transition: none;
+	}
 }
 
-.hover\:scale-105:hover{
-  --tw-scale-x: 1.05;
-  --tw-scale-y: 1.05;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+:root {
+	--drawably-stroke: #4a48a8;
+	--drawably-fill: #4a48a8;
+	--drawably-paper: #f4f4f2;
+	--drawably-success: #188a42;
+	--drawably-error: #d12724;
+	--drawably-ease: cubic-bezier(0.2, 0, 0, 1);
 }
 
-.hover\:border-blue-500\/50:hover{
-  border-color: rgb(59 130 246 / 0.5);
+/* subtle paper grain over everything: sells the hand-drawn-on-paper fantasy.
+   fixed + pointer-events-none so it never repaints on scroll or blocks input. */
+
+body::after {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: 40;
+	pointer-events: none;
+	opacity: 0.05;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
-.hover\:border-emerald-500\/50:hover{
-  border-color: rgb(16 185 129 / 0.5);
+@media (hover: hover) and (pointer: fine){
+
+  .hover\:scale-105:hover{
+    --tw-scale-x: 1.05;
+    --tw-scale-y: 1.05;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  }
+
+  .hover\:text-ink:hover{
+    --tw-text-opacity: 1;
+    color: rgb(74 72 168 / var(--tw-text-opacity));
+  }
+
+  .group:hover .group-hover\:translate-x-1{
+    --tw-translate-x: 0.25rem;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  }
 }
 
-.hover\:border-purple-500\/50:hover{
-  border-color: rgb(168 85 247 / 0.5);
-}
+@media (min-width: 640px){
 
-.hover\:border-white:hover{
-  --tw-border-opacity: 1;
-  border-color: rgb(255 255 255 / var(--tw-border-opacity));
-}
-
-.hover\:border-white\/20:hover{
-  border-color: rgb(255 255 255 / 0.2);
-}
-
-.hover\:bg-white:hover{
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-zinc-200:hover{
-  --tw-bg-opacity: 1;
-  background-color: rgb(228 228 231 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-zinc-800\/50:hover{
-  background-color: rgb(39 39 42 / 0.5);
-}
-
-.hover\:text-black:hover{
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity));
-}
-
-.hover\:text-blue-400:hover{
-  --tw-text-opacity: 1;
-  color: rgb(96 165 250 / var(--tw-text-opacity));
-}
-
-.hover\:text-white:hover{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.hover\:underline:hover{
-  text-decoration-line: underline;
-}
-
-.group:hover .group-hover\:translate-x-1{
-  --tw-translate-x: 0.25rem;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.group:hover .group-hover\:border-blue-500\/50{
-  border-color: rgb(59 130 246 / 0.5);
-}
-
-.group:hover .group-hover\:border-zinc-700{
-  --tw-border-opacity: 1;
-  border-color: rgb(63 63 70 / var(--tw-border-opacity));
-}
-
-.group:hover .group-hover\:bg-blue-500\/20{
-  background-color: rgb(59 130 246 / 0.2);
-}
-
-.group:hover .group-hover\:bg-emerald-500\/20{
-  background-color: rgb(16 185 129 / 0.2);
-}
-
-.group:hover .group-hover\:bg-purple-500\/10{
-  background-color: rgb(168 85 247 / 0.1);
-}
-
-.group:hover .group-hover\:fill-black{
-  fill: #000;
-}
-
-.group:hover .group-hover\:text-blue-400{
-  --tw-text-opacity: 1;
-  color: rgb(96 165 250 / var(--tw-text-opacity));
-}
-
-.group:hover .group-hover\:text-emerald-400{
-  --tw-text-opacity: 1;
-  color: rgb(52 211 153 / var(--tw-text-opacity));
-}
-
-.group:hover .group-hover\:text-purple-400{
-  --tw-text-opacity: 1;
-  color: rgb(192 132 252 / var(--tw-text-opacity));
-}
-
-.group:hover .group-hover\:opacity-100{
-  opacity: 1;
+  .sm\:text-7xl{
+    font-size: 4.5rem;
+    line-height: 1;
+  }
 }
 
 @media (min-width: 768px){
 
-  .md\:col-span-2{
-    grid-column: span 2 / span 2;
+  .md\:col-span-12{
+    grid-column: span 12 / span 12;
   }
 
-  .md\:ml-20{
-    margin-left: 5rem;
+  .md\:col-span-5{
+    grid-column: span 5 / span 5;
   }
 
-  .md\:mt-20{
-    margin-top: 5rem;
-  }
-
-  .md\:mt-56{
-    margin-top: 14rem;
+  .md\:col-span-7{
+    grid-column: span 7 / span 7;
   }
 
   .md\:block{
@@ -1275,24 +1369,20 @@ body{
     width: 8rem;
   }
 
-  .md\:w-9\/12{
-    width: 75%;
-  }
-
-  .md\:grid-cols-2{
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .md\:grid-cols-12{
+    grid-template-columns: repeat(12, minmax(0, 1fr));
   }
 
   .md\:flex-row{
     flex-direction: row;
   }
 
-  .md\:items-center{
-    align-items: center;
+  .md\:items-start{
+    align-items: flex-start;
   }
 
-  .md\:justify-start{
-    justify-content: flex-start;
+  .md\:items-center{
+    align-items: center;
   }
 
   .md\:justify-between{
@@ -1305,14 +1395,35 @@ body{
     margin-left: calc(1.5rem * calc(1 - var(--tw-space-x-reverse)));
   }
 
+  .md\:space-x-8 > :not([hidden]) ~ :not([hidden]){
+    --tw-space-x-reverse: 0;
+    margin-right: calc(2rem * var(--tw-space-x-reverse));
+    margin-left: calc(2rem * calc(1 - var(--tw-space-x-reverse)));
+  }
+
   .md\:space-y-0 > :not([hidden]) ~ :not([hidden]){
     --tw-space-y-reverse: 0;
     margin-top: calc(0px * calc(1 - var(--tw-space-y-reverse)));
     margin-bottom: calc(0px * var(--tw-space-y-reverse));
   }
 
-  .md\:text-left{
-    text-align: left;
+  .md\:px-4{
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .md\:py-32{
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+
+  .md\:py-4{
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .md\:text-right{
+    text-align: right;
   }
 
   .md\:text-2xl{
@@ -1320,8 +1431,18 @@ body{
     line-height: 2rem;
   }
 
-  .md\:text-9xl{
-    font-size: 8rem;
+  .md\:text-4xl{
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  .md\:text-8xl{
+    font-size: 6rem;
     line-height: 1;
+  }
+
+  .md\:text-sm{
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 }

@@ -1,1 +1,0 @@
-const a="Sugam Adhikari",i="Architecting scalable systems and modernizing legacy infrastructures with a focus on developer experience.",s="sugam.adhiakri123@gmail.com",e="+977 9843-(sike)",n="https://github.com/sugamadhiakri",t="https://linkedin.com/in/sugamadhiakri";export{i as b,s as e,n as g,t as l,a as n,e as p};
